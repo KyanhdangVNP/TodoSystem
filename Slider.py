@@ -1,5 +1,5 @@
 import pygame
-#Lmao thiss is work LMAOOOOO
+#ok -Kyanh
 d = pygame.display.set_mode((500, 500))
 pygame.init()
 
