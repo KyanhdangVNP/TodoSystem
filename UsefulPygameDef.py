@@ -5,7 +5,7 @@ import pygame
 #|  PYGAME FUNCTIONS |
 
 #Def Draw text:
-def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24, x = 0, y = 0, color = "black", alpha = 255, align = "left"):
+def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24, x = 0, y = 0, color = "black", alpha = 255, alignX = "left", alignY = "center"):
     if color == "light":
         color = "black"
     elif color == "dark":
@@ -27,17 +27,19 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
     xIndex = lines.index(max_len_line)
     textPrint = font.render(lines[xIndex], 1, (255,255,255))
 
-    xPrintText = x
     yPrintText = y
-    if align == "right":
-        xPrintText -= textPrint.get_width()
-    elif align == "center":
-        xPrintText -= (textPrint.get_width() / 2)
+    if alignY == "center":
+        yPrintText -= textPrint.get_height()
     
     #Vẽ chữ lên màn hình:
     for i, l in enumerate(lines):
         word = font.render(l, 0, color)
         word.set_alpha(alpha)
+        xPrintText = x
+        if alignX == "right":
+            xPrintText -= word.get_width()
+        elif alignX == "center":
+            xPrintText -= (word.get_width() / 2)
         screen.blit(word, (xPrintText, (yPrintText + size*i)))
 
 #Class Button, tạo ra nút có thể nhấn được:
