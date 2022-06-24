@@ -1,3 +1,4 @@
+from cmath import rect
 import os
 import eyed3
 import pygame
@@ -5,7 +6,7 @@ import pygame
 #|  PYGAME FUNCTIONS |
 
 #Def Draw text:
-def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24, x = 0, y = 0, color = "black", alpha = 255, alignX = "left", alignY = "center"):
+def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24, x = 0, y = 0, color = "black", alpha = 255, alignX = "left", alignY = "left"):
     if color == "light":
         color = "black"
     elif color == "dark":
@@ -71,7 +72,10 @@ class button():
             self.sizeY = height
             self.rect =self.image.get_rect()
             self.rect.topleft = (x, y)
-        self.alignRectX = alignRect
+        if len(alignRect) == 1:
+            alignRect.append("Left")
+        self.alignRectX = alignRect[0]
+        self.alignRectY = alignRect[1]
     
         self.clicked = False
         self.waitClicked = False
@@ -80,9 +84,9 @@ class button():
         #Set color (changing image of button) depends on theme right now
         if not self.themeChanging == False:
             if themeType == "light":
-                self.changeImg(self.image_light, self.sizePercent, self.rect.x, self.rect.y)
+                self.changeImg(self.image_light, "balance")
             elif themeType == "dark":
-                self.changeImg(self.image_dark, self.sizePercent, self.rect.x, self.rect.y)
+                self.changeImg(self.image_dark, "balance")
         
         #Set text in button depends on the theme right now
         if color == "light":
@@ -100,7 +104,9 @@ class button():
         if self.alignRectX == "center":
             self.rect.x -= self.image.get_width() / 2
         elif self.alignRectX == "right":
-            self.rect.x -= self.image.get_width
+            self.rect.x -= self.image.get_width()
+        if self.alignRectY == "center":
+            self.rect.y -= self.image.get_height() / 2
         
         #print(f"""self.rect.x: {self.rect.x}
 #self.rect: {self.rect}
@@ -162,6 +168,7 @@ class button():
         
         return self.action
     
+    
     #Tạo ra hàm chỉnh lại thành ảnh vẽ khác:
     def changeImg(self, imgChange, size = "balance", x = 0, y = 0):
         if type(imgChange) == str:
@@ -172,7 +179,11 @@ class button():
             y = self.rect.y
         width = imgChange.get_width()
         height = imgChange.get_height()
-        self.image = pygame.transform.scale(imgChange, (int(width * size / 100), int(height * size / 100)))
+        if not self.sizePercent == None:
+            self.image = pygame.transform.scale(imgChange, (int(width * size / 100), int(height * size / 100)))
+        else:
+            self.image = pygame.transform.scale(imgChange, (self.sizeX, self.sizeY))
+
         self.originalImg = imgChange
         
         self.rect =self.image.get_rect()
@@ -194,6 +205,8 @@ class button():
             self.image = pygame.transform.scale(self.originalImg, (int(sizeChangeWidth), int(sizeChangeHeight))).convert_alpha()
         else:
             self.image = pygame.transform.scale(self.originalImg, (x, y)).convert_alpha()
+            self.sizeX = self.image.get_width()
+            self.sizeY = self.image.get_height()
         
         xPos, yPos = self.rect.x, self.rect.y
         self.rect = self.image.get_rect()
@@ -217,6 +230,178 @@ class button():
             self.image = pygame.transform.flip(self.image, False, True)
         self.image = pygame.transform.rotate(self.image, 180)
         self.angle = angle
+    
+    #Some minor functions that help making the button more fancy:
+    #Def that's making size effect when hovering buttons and check if clicked:
+    def hovering(self, sizeNotActive, sizeActive):
+        if self.isColliding:
+            if self.action:
+                return True
+            self.changeSize(self.sizePercent + ((sizeActive - self.sizePercent) / 3), None, None)
+            #self.changeSize(12, None, None)
+        else:
+            self.changeSize(self.sizePercent + ((sizeNotActive - self.sizePercent) / 3), None, None)
+            #self.changeSize(20, None, None)
+        return False
+    
+    #Button slider functions:
+    def setSlider(self, minValue = 0, maxValue = 100, startX = 0, endX = 0):
+        self.slider_minValue = minValue
+        self.slider_maxValue = maxValue
+        self.slider_startX = startX
+        self.slider_endX = endX
+        self.slider_value = minValue
+    def setSliderX(self, startX, endX):
+        self.slider_startX = startX
+        self.slider_endX = endX
+    def setSliderValue(self):
+        #Get mouseX, mouseY position:
+        mouseX, mouseY = pygame.mouse.get_pos()
+        self.slider_value = mouseX / self.slider_valuePerPercent
+        if self.slider_value > self.slider_maxValue:
+            self.slider_value = self.slider_maxValue
+        elif self.slider_value < self.slider_minValue:
+            self.slider_value = self.slider_minValue
+    def drawSlider(self, screen):
+        self.slider_valuePerPercent = (self.slider_endX - self.slider_startX) / (self.slider_maxValue - self.slider_minValue)
+        self.changeXY(self.slider_startX + ((self.slider_value - self.slider_minValue) * self.slider_valuePerPercent), self.rect.y)
+        self.draw(screen)
+
+#Pygame rect functions:
+def drawRect(screen, x, y, width, height, color, alpha = 255, align = None, roundness = 0):
+    rect = pygame.Surface((width, height), pygame.SRCALPHA)
+    if align == "center":
+        x -= rect.get_width() / 2
+        #y -= rect.get_height() / 2
+    pygame.draw.rect(rect, color, rect.get_rect(), 0, roundness)
+    rect.set_alpha(alpha)
+    screen.blit(rect, (x, y))
+
+
+
+#| IMPORTANT FUNCTIONS TO CREATES TO-DO LISTS |
+
+class toDoList():
+    def __init__(self, title = "united", posIndex = 0):
+        self.originalImg = pygame.image.load("img/BlankBtn.png").convert_alpha()
+        self.image_light = self.originalImg
+        self.image_dark = pygame.image.load("img/BlankBtn_dark.png").convert_alpha()
+        width = self.originalImg.get_width() 
+        height = self.originalImg.get_height()
+        self.image = pygame.transform.scale(self.originalImg, (int(width * 11 / 100), int(height * 11 / 100)))
+        self.alpha = 200
+
+        self.sizePercent = 11
+        self.sizeX = width
+        self.sizeY = height
+        self.rect = self.image.get_rect()
+
+        self.FontSize = 20
+    
+        self.clicked = False
+        self.waitClicked = False
+
+        #To-do list important varibles:
+        self.width = 240
+        self.height = 80
+        self.rect.topleft = ((self.width / 2 + 20) * posIndex, 120) # to-do list pos x y
+        self.titleFontSize = 25
+        self.title = title
+        self.posIndex = posIndex
+        self.toDoList = ["Hello", "kmai"]
+
+    def drawList(self, screen, themeType):
+        #Set width of to-do list rect depends on how many things are listed in list:
+        self.height = 80 * (len(self.toDoList) + 1)
+        #Draw a transparent rect layer behind to-do list:
+        imgWidth = self.image.get_width()
+        imgHeight = self.image.get_height()
+        drawRect(screen, self.rect.x  * self.posIndex, self.rect.y - (imgHeight / 2) - 5, self.width + 10, self.height + 10, "light gray", self.alpha, "center", 8)
+
+        #Set color of img and text to be nice with theme:
+        if themeType == "light":
+            self.changeImg(self.image_light)
+            color = "black"
+        elif themeType == "dark":
+            self.changeImg(self.image_dark)
+            color = "light gray"
+        
+        self.isColliding = False
+        self.action = False
+        x = self.rect.x
+        y = self.rect.y
+        self.rect.x -= self.image.get_width() / 2
+        self.rect.y -= self.image.get_height() / 2
+
+        #Lấy vị trí của chuột trên màn hình:
+        pos = pygame.mouse.get_pos()
+        
+        #Kiểm tra vị trí của chuột có chạm vào nút không:
+        if self.rect.collidepoint(pos):
+            self.isColliding = True
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                if self.waitClicked == False:
+                    self.waitClicked = True
+                self.clicked = True
+        
+        if pygame.mouse.get_pressed()[0] == 0:
+            if self.waitClicked == True:
+                self.waitClicked = False
+                self.action = True
+            self.clicked = False
+
+        #Vẽ nút bấm lên màn hình:
+        #self.image.set_alpha(self.alpha)
+        #The code above doesn't need to run because it will makes the title more harder to see.
+        
+        #screen.blit(self.image, (self.rect.x * self.posIndex, self.rect.y))
+        
+        #Vẽ chữ lên màn hình:
+        #Tạo ra font, chữ:
+        font = pygame.font.Font("Fonts/MinecraftBold.otf", self.titleFontSize)
+        
+        #Tìm ra giá trị x và y của text chuẩn bị vẽ:
+        lines = self.title.splitlines()
+        max_length = 0
+        
+        for line in lines:
+            if(len(line) > max_length):
+                max_length = len(line)
+                max_len_line = line
+        xIndex = lines.index(max_len_line)
+        textPrint = font.render(lines[xIndex], 1, (255,255,255))
+        xPrintText = self.rect.x + (imgWidth / 2) - (textPrint.get_width() / 2)
+        yPrintText = self.rect.y + (imgHeight / 2) - (textPrint.get_height() / 2 * len(lines))
+        #Vẽ chữ lên màn hình:
+        for i, l in enumerate(lines):
+            word = font.render(l, 0, color)
+            screen.blit(word, (xPrintText, (yPrintText + self.FontSize*i)))
+
+        #Changing back to original x y:
+        self.rect.x = x
+        self.rect.y = y
+        
+        return self.action
+    
+    def changeImg(self, imgChange):
+        if type(imgChange) == str:
+            imgChange = pygame.image.load(imgChange)
+        size = self.sizePercent
+        x = self.rect.x
+        y = self.rect.y
+        imgWidth = imgChange.get_width()
+        imgHeight = imgChange.get_height()
+        if not self.sizePercent == None:
+            self.image = pygame.transform.scale(imgChange, (int(imgWidth * size / 100), int(imgHeight * size / 100)))
+        else:
+            self.image = pygame.transform.scale(imgChange, (self.sizeX, self.sizeY))
+
+        self.originalImg = imgChange
+        self.rect =self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+#| END OF TO-DO LISTS FUNCTIONS |
+
 
 
 #Pygame.mixer, play musics and sounds:
@@ -224,7 +409,6 @@ class button():
 def playMusic(musicPath):
     pygame.mixer.music.load(musicPath)
     pygame.mixer.music.play(-1)
-
 
 #| eyed3 Functions |
 def getAudioInfo(path):

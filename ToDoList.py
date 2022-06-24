@@ -1,3 +1,6 @@
+from turtle import Screen
+
+
 if __name__ == "__main__":
     #Importing Moudles and Python files:
     import os
@@ -19,7 +22,8 @@ if __name__ == "__main__":
     print("Welcome to To-do list system, a program that helps people can shelduce their jobs, works in their lists so that they can do their works faster and better.")
     print()
     print("The system is now loading, please wait...")
-
+    
+    #Defs of screens:
     def mainMenu():
         global screen
         global SCREEN_WIDTH
@@ -38,12 +42,12 @@ if __name__ == "__main__":
         global musicLast
 
         #Load btn:
-        PJTitle = button(SCREEN_WIDTH / 2, 100, "img/PJTitleButCooler.png", 90, "center")
-        PJMinorTitle = button(SCREEN_WIDTH / 2, 180, "img/PJMinorTitle.png", 20, "center")
+        PJTitle = button(SCREEN_WIDTH / 2, 100, "img/PJTitleButCooler.png", 90, ["center"])
+        PJMinorTitle = button(SCREEN_WIDTH / 2, 180, "img/PJMinorTitle.png", 20, ["center"])
 
-        startBtn = button(SCREEN_WIDTH / 2, 185, blankBtnImg, 20, "center", True, blankBtn_darkImg)
-        optionsBtn = button(SCREEN_WIDTH / 2, 300, blankBtnImg, 20, "center", True, blankBtn_darkImg)
-        exitBtn = button(SCREEN_WIDTH / 2, 415, blankBtnImg, 20, "center", True, blankBtn_darkImg)
+        startBtn = button(SCREEN_WIDTH / 2, 185, blankBtnImg, 20, ["center"], True, blankBtn_darkImg)
+        optionsBtn = button(SCREEN_WIDTH / 2, 300, blankBtnImg, 20, ["center"], True, blankBtn_darkImg)
+        exitBtn = button(SCREEN_WIDTH / 2, 415, blankBtnImg, 20, ["center"], True, blankBtn_darkImg)
         isClickedToContinute = False
         flashingText = pygame.USEREVENT + 1
         mainMenuStart= False
@@ -51,14 +55,14 @@ if __name__ == "__main__":
         clickedToContinute_alpha = None
 
         #SETTINGS PREPARING:
-        settings_BackBtn = button(150, 215, blankBtnImg, 8, "center", True, blankBtn_darkImg)
-        settings_ThemeBtn = button(SCREEN_WIDTH / 2, 100, "img/LightThemeBtn.png", 10, "center", True, "img/NightThemeBtn.png")
+        settings_BackBtn = button(150, 215, blankBtnImg, 8, ["center"], True, blankBtn_darkImg)
+        settings_ThemeBtn = button(SCREEN_WIDTH / 2, 100, "img/LightThemeBtn.png", 10, ["center"], True, "img/NightThemeBtn.png")
 
-        settings_VolumeBtn = button(SCREEN_WIDTH - 240, 100, "img/VolumeBtn.png", 10, "center")
+        settings_VolumeBtn = button(SCREEN_WIDTH - 240, 100, "img/VolumeBtn.png", 10, ["center"])
 
-        settings_MusicBoard = button(SCREEN_WIDTH / 2, 347, "img/Settings_MusicBoard.png", 13, "center", True, "img/MusicBoard_dark.png")
-        settings_Music_ChangeLast = button(80, 347, arrowBtnImg, 10, "center", True, arrowBtnImg_dark )
-        settings_Music_ChangeNext = button(SCREEN_WIDTH - 80, 347, arrowBtnImg, 10, "center", True, arrowBtnImg_dark)
+        settings_MusicBoard = button(SCREEN_WIDTH / 2, 347, "img/Settings_MusicBoard.png", 13, ["center"], True, "img/MusicBoard_dark.png")
+        settings_Music_ChangeLast = button(80, 347, arrowBtnImg, 10, ["center"], True, arrowBtnImg_dark )
+        settings_Music_ChangeNext = button(SCREEN_WIDTH - 80, 347, arrowBtnImg, 10, ["center"], True, arrowBtnImg_dark)
         settings_Music_ChangeLast.rotate("horizontal")
 
         #Starting Pygame screen:
@@ -118,35 +122,19 @@ if __name__ == "__main__":
                 if screenName == "mainMenu":
                     startBtn.changeXY(SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT - 120)
                     startBtn.draw(screen, "Start", "Fonts\MinecraftBold.otf", 45, themeType, themeType)
+                    if startBtn.hovering(20, 22):
+                        screenFinalAction = "mainScreen"
                     
-                    if startBtn.isColliding:
-                        if startBtn.action:
-                            screenFinalAction = "mainScreen"
-                        startBtn.changeSize(startBtn.sizePercent + ((22 - startBtn.sizePercent) / 3), None, None)
-                        #startBtn.changeSize(12, None, None)
-                    else:
-                        startBtn.changeSize(startBtn.sizePercent + ((20 - startBtn.sizePercent) / 3), None, None)
-                        #startBtn.changeSize(20, None, None)
-                    
-
                     optionsBtn.changeXY(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 120)
                     optionsBtn.draw(screen, "Settings", "Fonts\MinecraftBold.otf", 45, themeType, themeType)
-                    if optionsBtn.isColliding:
-                        if optionsBtn.action:
-                            screenName = "mainMenu_settings"
-                            BGType = "blur"
-                        optionsBtn.changeSize(optionsBtn.sizePercent + ((22 - optionsBtn.sizePercent) / 3), None, None)
-                    else:
-                        optionsBtn.changeSize(optionsBtn.sizePercent + ((20 - optionsBtn.sizePercent) / 3), None, None)
+                    if optionsBtn.hovering(20, 22):
+                        screenName = "mainMenu_settings"
+                        BGType = "blur"
 
                     exitBtn.changeXY(SCREEN_WIDTH / 2 + 300, SCREEN_HEIGHT - 120)
                     exitBtn.draw(screen, "Exit", "Fonts\MinecraftBold.otf", 45, themeType, themeType)
-                    if exitBtn.isColliding:
-                        if exitBtn.action:
-                            screenFinalAction = "exitProgram"
-                        exitBtn.changeSize(exitBtn.sizePercent + ((22 - exitBtn.sizePercent) / 3), None, None)
-                    else:
-                        exitBtn.changeSize(exitBtn.sizePercent + ((20 - exitBtn.sizePercent) / 3), None, None)
+                    if exitBtn.hovering(20, 22):
+                        screenFinalAction = "exitProgram"
                     
                     #Draw a little credit text on the top right corner in the main menu
                     drawText(screen, "Made my Kyanh |N| SkyDra", "Fonts\MinecraftBold.otf", 24, SCREEN_WIDTH - 15, 12, themeType, None, "right")
@@ -154,32 +142,24 @@ if __name__ == "__main__":
                 if screenName == "mainMenu_settings":
                     drawText(screen, "| SETTINGS |", "Fonts\MinecraftBold.otf", 48, SCREEN_WIDTH / 2, 15, themeType, None, "center")
                     settings_BackBtn.changeXY(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100)
-                    settings_BackBtn.draw(screen, "BACK", "Fonts\MinecraftBold.otf", 45, themeType, themeType)
+                    settings_BackBtn.draw(screen, "BACK", "Fonts\MinecraftBold.otf", 40, themeType, themeType)
                     
-                    if settings_BackBtn.isColliding:
-                        if settings_BackBtn.action:
-                            print("GOING BACK TO MAIN MENU SCREEN...")
-                            screenName = "mainMenu"
-                            BGType = "normal"
-                        settings_BackBtn.changeSize(settings_BackBtn.sizePercent + ((15 - settings_BackBtn.sizePercent) / 3), None, None)
-                    else:
-                        settings_BackBtn.changeSize(settings_BackBtn.sizePercent + ((13 - settings_BackBtn.sizePercent) / 3), None, None)
+                    if settings_BackBtn.hovering(14, 16):
+                        print("GOING BACK TO MAIN MENU SCREEN...")
+                        screenName = "mainMenu"
+                        BGType = "normal"
                     
                     #Draw theme setting:
                     drawText(screen, "Theme:", "Fonts\MinecraftBold.otf", 45, 64, 105, themeType)
                     settings_ThemeBtn.changeXY(290, 100)
                     settings_ThemeBtn.draw(screen, "", None, None, None, themeType)
                     
-                    if settings_ThemeBtn.isColliding:
-                        if settings_ThemeBtn.action:
-                            print("CHANGING THEME...")
-                            if themeType == "light":
-                                themeType = "dark"
-                            else:
-                                themeType = "light"
-                        settings_ThemeBtn.changeSize(settings_ThemeBtn.sizePercent + ((16 - settings_ThemeBtn.sizePercent) / 3), None, None)
-                    else:
-                        settings_ThemeBtn.changeSize(settings_ThemeBtn.sizePercent+ ((14 - settings_ThemeBtn.sizePercent) / 3), None, None)
+                    if settings_ThemeBtn.hovering(14, 16):
+                        print("CHANGING THEME...")
+                        if themeType == "light":
+                            themeType = "dark"
+                        else:
+                            themeType = "light"
 
                     #Draw volume setting:
                     drawText(screen, "Volume:", "Fonts\MinecraftBold.otf", 45, SCREEN_WIDTH - 250, 105, themeType, 255, "right")
@@ -197,16 +177,12 @@ if __name__ == "__main__":
                         elif pygame.mixer.music.get_volume() == 0.0:
                             settings_VolumeBtn.changeImg("img/VolumeBtn_Muted_dark.png")
                     settings_VolumeBtn.draw(screen)
-                    
-                    if settings_VolumeBtn.isColliding:
-                        if settings_VolumeBtn.action:
-                            if pygame.mixer.music.get_volume() == 1.0:
-                                pygame.mixer.music.set_volume(0.0)
-                            elif pygame.mixer.music.get_volume() == 0.0:
-                                pygame.mixer.music.set_volume(1.0)
-                        settings_VolumeBtn.changeSize(settings_VolumeBtn.sizePercent + ((16 - settings_VolumeBtn.sizePercent) / 3), None, None)
-                    else:
-                        settings_VolumeBtn.changeSize(settings_VolumeBtn.sizePercent+ ((14 - settings_VolumeBtn.sizePercent) / 3), None, None)
+
+                    if settings_VolumeBtn.hovering(14, 16):
+                        if pygame.mixer.music.get_volume() == 1.0:
+                            pygame.mixer.music.set_volume(0.0)
+                        elif pygame.mixer.music.get_volume() == 0.0:
+                            pygame.mixer.music.set_volume(1.0)
 
                     #Draw audio setting:
                     drawText(screen, "Music:", "Fonts\MinecraftBold.otf", 45, 64, 224, themeType)
@@ -217,28 +193,18 @@ if __name__ == "__main__":
                     drawText(screen, "Artist: " + musicInfo["artist"], "Fonts\MinecraftBold.otf", 35, SCREEN_WIDTH / 2, 374, themeType, None, "center")
                     settings_Music_ChangeLast.changeXY(64, 347)
                     settings_Music_ChangeLast.draw(screen, "", None, None, None, themeType)
-                    if settings_Music_ChangeLast.isColliding:
-                        if settings_Music_ChangeLast.action:
-                            musicCurrent = musicList[musicList.index(musicCurrent) - 1]
-                            print("Changing music...")
-                        
-                        settings_Music_ChangeLast.changeSize(settings_Music_ChangeLast.sizePercent + ((15 - settings_Music_ChangeLast.sizePercent) / 3), None, None)
-                    else:
-                        settings_Music_ChangeLast.changeSize(settings_Music_ChangeLast.sizePercent + ((13 - settings_Music_ChangeLast.sizePercent) / 3), None, None)
+                    if settings_Music_ChangeLast.hovering(14, 16):
+                        musicCurrent = musicList[musicList.index(musicCurrent) - 1]
+                        print("Changing music...")
                     
                     settings_Music_ChangeNext.changeXY(SCREEN_WIDTH - 64, 347)
                     settings_Music_ChangeNext.draw(screen, "", None, None, None, themeType)
-                    if settings_Music_ChangeNext.isColliding:
-                        if settings_Music_ChangeNext.action:
-                            if musicList.index(musicCurrent) + 1 == len(musicList):
-                                musicCurrent = musicList[0]
-                            else:
-                                musicCurrent = musicList[musicList.index(musicCurrent) + 1]
-                            print("Changing music...")
-                        
-                        settings_Music_ChangeNext.changeSize(settings_Music_ChangeNext.sizePercent + ((15 - settings_Music_ChangeNext.sizePercent) / 3), None, None)
-                    else:
-                        settings_Music_ChangeNext.changeSize(settings_Music_ChangeNext.sizePercent + ((13 - settings_Music_ChangeNext.sizePercent) / 3), None, None)
+                    if settings_Music_ChangeNext.hovering(14, 16):
+                        if musicList.index(musicCurrent) + 1 == len(musicList):
+                            musicCurrent = musicList[0]
+                        else:
+                            musicCurrent = musicList[musicList.index(musicCurrent) + 1]
+                        print("Changing music...")
                     
 
             for event in pygame.event.get():
@@ -298,7 +264,19 @@ if __name__ == "__main__":
         global musicLast
 
         #Load btn:
-        settings_BackBtn = button(150, 215, blankBtnImg, 8, "center", True, blankBtn_darkImg)
+        #Setting up slider:
+        xScroll = 0
+        sliderBoard = button(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50, "img/SliderBoard.png", 13, ["center"], True, "img/SliderBoard_dark.png")
+        sliderBtn = button(0, SCREEN_HEIGHT - 64, "img/SliderBtn.png", 13, ["center"])
+        sliderBtn.setSlider(0, 100, 32, SCREEN_WIDTH - 32)
+
+        #Setting up main menu buttons (buttons on the top of screen):
+        menu_fileBtn = button(24, 24, blankBtnImg, 13, ["center"], True, blankBtn_darkImg)
+        menu_editBtn = button(24, 24, blankBtnImg, 13, ["center"], True, blankBtn_darkImg)
+        menu_settingsBtn = button(24, 24, blankBtnImg, 13, ["center"], True, blankBtn_darkImg)
+
+        #Setting up default template to-do list:
+        a = toDoList("list a", 1)
 
         #Starting Pygame screen:
         screenFinalAction = None
@@ -324,8 +302,37 @@ if __name__ == "__main__":
             BGImg = pygame.transform.scale(BGImg, (SCREEN_WIDTH, SCREEN_HEIGHT)).convert_alpha()
             screen.blit(BGImg, (0, 0))
 
-            drawText(screen, "Nothing's here lol\n(yep, nothing's here lmao)", "Fonts/MinecraftBold.otf", 56, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, themeType, 255, "center")
+            #Draw slider:
+            sliderBoard.changeXY(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 59)
+            sliderBoard.changeSize(None, SCREEN_WIDTH - 64, sliderBoard.image.get_height())
+            sliderBoard.draw(screen, "", None, None, None, themeType)
+            if sliderBoard.clicked:
+                sliderBtn.setSliderValue()
 
+            sliderBtn.setSliderX(38, SCREEN_WIDTH - 38)
+            sliderBtn.changeXY(sliderBtn.rect.x, SCREEN_HEIGHT - 64)
+            sliderBtn.drawSlider(screen)
+
+            #Draw menu buttons:
+            drawRect(screen, 0, 0, SCREEN_WIDTH, 75, "gray", 155)
+
+            menu_fileBtn.changeXY(95, 14)
+            menu_fileBtn.draw(screen, "File", "Fonts/MinecraftBold.otf", 24, themeType)
+            if menu_fileBtn.hovering(10,11):
+                pass
+            menu_editBtn.changeXY(250, 14)
+            menu_editBtn.draw(screen, "Edit", "Fonts/MinecraftBold.otf", 24, themeType)
+            if menu_editBtn.hovering(10,11):
+                pass
+            menu_settingsBtn.changeXY(405, 14)
+            menu_settingsBtn.draw(screen, "Settings", "Fonts/MinecraftBold.otf", 24, themeType)
+            if menu_settingsBtn.hovering(10,11):
+                pass
+
+            #Draw To-do lists:
+            a.drawList(screen, themeType)
+
+            
             for event in pygame.event.get():
                 #Get another value of screen width, screen height and check if the screen size is different, so that the screen changes into BG size.
                 if event.type == pygame.VIDEORESIZE:
@@ -353,6 +360,8 @@ if __name__ == "__main__":
             
             pygame.display.flip()
             pygame.display.update()
+
+        CheckScreenFinalAction(screenFinalAction)
 
     
     #Def to check screen final action to change to new screen
@@ -393,6 +402,7 @@ if __name__ == "__main__":
     SCREEN_HEIGHT_LAST = SCREEN_HEIGHT
     screenName = "mainMenu"
     themeType = "light"
+    FPS = 60
 
     #Starting main menu of program:
     musicList = os.listdir("./Musics")
