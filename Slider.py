@@ -1,75 +1,109 @@
 import pygame
-#ok -Kyanh
-d = pygame.display.set_mode((500, 500))
-pygame.init()
+from pygame.locals import *
 
-#Takes rectangle's size, position and a point. Returns true if that
-#point is inside the rectangle and false if it isnt.
-def pointInRectanlge(px, py, rw, rh, rx, ry):
-    if px > rx and px < rx  + rw:
-        if py > ry and py < ry + rh:
-            return True
-    return False
+AllowTextInput = True
+StartTextInput = False
+IMETextEditing = False
+Text = ""
+EditPos = 0
+IMEText = ""
+IMEStart = 0
 
-#Blueprint to make sliders in the game
-class Slider:
-    def __init__(self, position:tuple, upperValue:int=10, sliderWidth:int = 30, text:str="Editing features for simulation",
-                 outlineSize:tuple=(300, 100))->None:
-        self.position = position
-        self.outlineSize = outlineSize
-        self.text = text
-        self.sliderWidth = sliderWidth
-        self.upperValue = upperValue
-        
-    #returns the current value of the slider
-    def getValue(self)->float:
-        return self.sliderWidth / (self.outlineSize[0] / self.upperValue)
+TextBoxLocation = (0,600)
+Skin_Arrow = None
 
-    #renders slider and the text showing the value of the slider
-    def render(self, display:pygame.display)->None:
-        #draw outline and slider rectangles
-        pygame.draw.rect(display, (0, 0, 0), (self.position[0], self.position[1], 
-                                              self.outlineSize[0], self.outlineSize[1]), 3)
-        
-        pygame.draw.rect(display, (0, 0, 0), (self.position[0], self.position[1], 
-                                              self.sliderWidth, self.outlineSize[1] - 10))
+MaxLength_width = 464
+def insertChar(mystring, position, chartoinsert):
+    longi = len(mystring)
+    mystring = mystring[:position] + chartoinsert + mystring[position:] 
+    return mystring
 
-        #determite size of font
-        self.font = pygame.font.Font(pygame.font.get_default_font(), int((15/100)*self.outlineSize[1]))
+def update():
+    global AllowTextInput, IMETextEditing, StartTextInput, Text, IMEText, IMEStart, EditPos, Skin_Arrow, MaxLength_width
+    global screen
 
-        #create text surface with value
-        valueSurf = self.font.render(f"{self.text}: {round(self.getValue())}", True, (255, 0, 0))
-        
-        #centre text
-        textx = self.position[0] + (self.outlineSize[0]/2) - (valueSurf.get_rect().width/2)
-        texty = self.position[1] + (self.outlineSize[1]/2) - (valueSurf.get_rect().height/2)
-
-        display.blit(valueSurf, (textx, texty))
-
-    #allows users to change value of the slider by dragging it.
-    def changeValue(self)->None:
-        #If mouse is pressed and mouse is inside the slider
-        mousePos = pygame.mouse.get_pos()
-        if pointInRectanlge(mousePos[0], mousePos[1]
-                            , self.outlineSize[0], self.outlineSize[1], self.position[0], self.position[1]):
-            if pygame.mouse.get_pressed()[0]:
-                #the size of the slider
-                self.sliderWidth = mousePos[0] - self.position[0]
-
-                #limit the size of the slider
-                if self.sliderWidth < 1:
-                    self.sliderWidth = 0
-                if self.sliderWidth > self.outlineSize[0]:
-                    self.sliderWidth = self.outlineSize[0]
-
-slider = Slider((100, 100))
-
-while True:
-    pygame.event.get()
-    d.fill((255, 255, 255))
-
-    slider.render(d)
-    slider.changeValue()
-    print(slider.getValue())
+    if (Skin_Arrow == None):
+        Skin_Arrow = pygame.UPG.WindowSkin.subsurface((168,24,16,16))
     
+    if (not AllowTextInput):
+        StartTextInput = False
+        IMETextEditing = False
+        Text = ""
+        
+        return
+    
+    if StartTextInput:
+        if (IMETextEditing):
+            img_text = pygame.UPG.DefaultFont.render(insertChar(Text, EditPos, insertChar(IMEText, IMEStart , "_")),1, (255,255,255))
+        else:
+            img_text = pygame.UPG.DefaultFont.render(insertChar(Text, EditPos, "_"),1, (255,255,255))
+
+        if (img_text.get_width() > MaxLength_width):
+            img_text = img_text.subsurface((img_text.get_width()-MaxLength_width, 0, MaxLength_width, img_text.get_height()))
+        pygame.screen.blit( Skin_Arrow, TextBoxLocation )
+        pygame.screen.blit( img_text, (TextBoxLocation[0]+16, TextBoxLocation[1]) )
+    
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            print(event.key)
+            if event.key == K_RETURN:
+                if not StartTextInput:
+                    StartTextInput = True
+                    pygame.key.start_text_input()
+                else:               
+                    if IMETextEditing:
+                        IMETextEditing = False
+                        continue
+                
+                    print(Text)
+                    Text = ""
+                    EditPos = 0
+                    pygame.key.stop_text_input()
+
+                    StartTextInput = False
+            elif event.key == K_BACKSPACE:
+                if StartTextInput and not IMETextEditing:
+                    if (len(Text) > 0):
+                        Text = Text[:-1]
+
+                        EditPos = max(0,EditPos-1)
+
+            elif event.key == K_LEFT:
+                if not StartTextInput or IMETextEditing:
+                    continue
+
+                EditPos = max(0,EditPos-1)
+            elif event.key == K_RIGHT:
+                if not StartTextInput or IMETextEditing:
+                    continue
+
+                EditPos = min(len(Text),EditPos+1)
+            
+        elif event.type == TEXTINPUT:
+            IMETextEditing = False
+            IMEText = ""
+            Text = insertChar(Text, EditPos, event.text)
+            EditPos += len(event.text)
+            pygame.key.set_text_input_rect(pygame.Rect(TextBoxLocation,(240,240)))
+            
+        elif event.type == TEXTEDITING:
+            if not event.text == '':
+                IMETextEditing = True
+            else:
+                IMETextEditing = False
+            IMEText = event.text
+            IMEStart = event.start
+            pygame.key.set_text_input_rect(pygame.Rect(TextBoxLocation,(240,240)))
+
+screen = pygame.display.set_mode((1020, 740))
+running = True
+while running:
+    update()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    pygame.display.flip()
     pygame.display.update()
+
+pygame.quit()

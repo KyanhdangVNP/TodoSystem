@@ -1,5 +1,4 @@
-from turtle import Screen
-
+pixelFont = "Fonts/MinecraftBold.otf"
 
 if __name__ == "__main__":
     #Importing Moudles and Python files:
@@ -61,8 +60,8 @@ if __name__ == "__main__":
         settings_VolumeBtn = button(SCREEN_WIDTH - 240, 100, "img/VolumeBtn.png", 10, ["center"])
 
         settings_MusicBoard = button(SCREEN_WIDTH / 2, 347, "img/Settings_MusicBoard.png", 13, ["center"], True, "img/MusicBoard_dark.png")
-        settings_Music_ChangeLast = button(80, 347, arrowBtnImg, 10, ["center"], True, arrowBtnImg_dark )
-        settings_Music_ChangeNext = button(SCREEN_WIDTH - 80, 347, arrowBtnImg, 10, ["center"], True, arrowBtnImg_dark)
+        settings_Music_ChangeLast = button(80, 347, "img/ArrowBtn2.png", 10, ["center"], True, "img/ArrowBtn2_dark.png")
+        settings_Music_ChangeNext = button(SCREEN_WIDTH - 80, 347, "img/ArrowBtn2.png", 10, ["center"], True, "img/ArrowBtn2_dark.png")
         settings_Music_ChangeLast.rotate("horizontal")
 
         #Starting Pygame screen:
@@ -137,7 +136,7 @@ if __name__ == "__main__":
                         screenFinalAction = "exitProgram"
                     
                     #Draw a little credit text on the top right corner in the main menu
-                    drawText(screen, "Made my Kyanh |N| SkyDra", "Fonts\MinecraftBold.otf", 24, SCREEN_WIDTH - 15, 12, themeType, None, "right")
+                    drawText(screen, "Made my Ky Anh and Thien Long", "Fonts\MinecraftBold.otf", 24, SCREEN_WIDTH - 15, 12, themeType, None, "right")
                 
                 if screenName == "mainMenu_settings":
                     drawText(screen, "| SETTINGS |", "Fonts\MinecraftBold.otf", 48, SCREEN_WIDTH / 2, 15, themeType, None, "center")
@@ -191,15 +190,15 @@ if __name__ == "__main__":
 
                     drawText(screen, musicInfo["title"], "Fonts\MinecraftBold.otf", 35, SCREEN_WIDTH / 2, 320, themeType, None, "center")
                     drawText(screen, "Artist: " + musicInfo["artist"], "Fonts\MinecraftBold.otf", 35, SCREEN_WIDTH / 2, 374, themeType, None, "center")
-                    settings_Music_ChangeLast.changeXY(64, 347)
+                    settings_Music_ChangeLast.changeXY(SCREEN_WIDTH / 2 - 415, 322)
                     settings_Music_ChangeLast.draw(screen, "", None, None, None, themeType)
-                    if settings_Music_ChangeLast.hovering(14, 16):
+                    if settings_Music_ChangeLast.hovering(15, 17):
                         musicCurrent = musicList[musicList.index(musicCurrent) - 1]
                         print("Changing music...")
                     
-                    settings_Music_ChangeNext.changeXY(SCREEN_WIDTH - 64, 347)
+                    settings_Music_ChangeNext.changeXY(SCREEN_WIDTH / 2 + 415, 322)
                     settings_Music_ChangeNext.draw(screen, "", None, None, None, themeType)
-                    if settings_Music_ChangeNext.hovering(14, 16):
+                    if settings_Music_ChangeNext.hovering(15, 17):
                         if musicList.index(musicCurrent) + 1 == len(musicList):
                             musicCurrent = musicList[0]
                         else:
@@ -266,8 +265,8 @@ if __name__ == "__main__":
         #Load btn:
         #Setting up slider:
         xScroll = 0
-        sliderBoard = button(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50, "img/SliderBoard.png", 13, ["center"], True, "img/SliderBoard_dark.png")
-        sliderBtn = button(0, SCREEN_HEIGHT - 64, "img/SliderBtn.png", 13, ["center"])
+        sliderBoard = button(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50, "img/SliderBoard.png", 13, ["center"])
+        sliderBtn = button(0, SCREEN_HEIGHT - 64, "img/SliderBtn.png", 10, ["center"])
         sliderBtn.setSlider(0, 100, 32, SCREEN_WIDTH - 32)
 
         #Setting up main menu buttons (buttons on the top of screen):
@@ -276,13 +275,21 @@ if __name__ == "__main__":
         menu_settingsBtn = button(24, 24, blankBtnImg, 13, ["center"], True, blankBtn_darkImg)
 
         #Setting up default template to-do list:
-        a = toDoList("list a", 1)
+        weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        works = [["Learn Math", "Study English", "Coding StudoList project", "Learn coding"], ["Do house work", "Cook breakfast", "Learn to make music"], ["Coding StudoList project", "Learn Physics", "Learn English", "Doing art requests"], ["Learn to make game :)", "Learn Math", "Do homeworks", "Making game"], ["Exercising", "Do housework", "Clean the house", "Playing Piano"], ["Making script for game", "Coding StudoList project", "Making music", "Go play football"], ["Playing games", "Go play football", "Making musics", "Drawing arts for own and requests -_-"]]
+        toDoLists = []
+        for i in range(len(weekday)):
+            k = toDoList(weekday[i], works[i], i + 1)
+            toDoLists.append(k)
 
         #Starting Pygame screen:
         screenFinalAction = None
         screenName = "mainMenu"
         running = True
         while running:
+            #Get events:
+            events = pygame.event.get()
+
             #Music system:
             if not musicCurrent == musicLast:
                 playMusic(f"Musics/{musicCurrent}")
@@ -310,30 +317,32 @@ if __name__ == "__main__":
                 sliderBtn.setSliderValue()
 
             sliderBtn.setSliderX(38, SCREEN_WIDTH - 38)
-            sliderBtn.changeXY(sliderBtn.rect.x, SCREEN_HEIGHT - 64)
+            sliderBtn.changeXY(sliderBtn.rect.x, SCREEN_HEIGHT - 68)
             sliderBtn.drawSlider(screen)
 
             #Draw menu buttons:
-            drawRect(screen, 0, 0, SCREEN_WIDTH, 75, "gray", 155)
+            drawRect(screen, 0, 0, SCREEN_WIDTH, 75, (205, 235, 243), 200)
 
             menu_fileBtn.changeXY(95, 14)
-            menu_fileBtn.draw(screen, "File", "Fonts/MinecraftBold.otf", 24, themeType)
+            menu_fileBtn.draw(screen, "File", "Fonts/MinecraftBold.otf", 24, "black")
             if menu_fileBtn.hovering(10,11):
                 pass
             menu_editBtn.changeXY(250, 14)
-            menu_editBtn.draw(screen, "Edit", "Fonts/MinecraftBold.otf", 24, themeType)
+            menu_editBtn.draw(screen, "Edit", "Fonts/MinecraftBold.otf", 24, "black")
             if menu_editBtn.hovering(10,11):
                 pass
             menu_settingsBtn.changeXY(405, 14)
-            menu_settingsBtn.draw(screen, "Settings", "Fonts/MinecraftBold.otf", 24, themeType)
+            menu_settingsBtn.draw(screen, "Settings", "Fonts/MinecraftBold.otf", 24, "black")
             if menu_settingsBtn.hovering(10,11):
                 pass
 
             #Draw To-do lists:
-            a.drawList(screen, themeType)
+            for i in toDoLists:
+                if i.drawList(screen, events, sliderBtn.slider_value, len(toDoLists)) == "createNewColumn":
+                    toDoLists.append(toDoList("united list", ["United work"], len(toDoLists) + 1))
 
             
-            for event in pygame.event.get():
+            for event in events:
                 #Get another value of screen width, screen height and check if the screen size is different, so that the screen changes into BG size.
                 if event.type == pygame.VIDEORESIZE:
                     SCREEN_WIDTH_LAST, SCREEN_HEIGHT_LAST = pygame.display.get_surface().get_size()
@@ -354,7 +363,7 @@ if __name__ == "__main__":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         screenFinalAction = "exitProgram"
-            
+                        
             if not screenFinalAction == None:
                 break
             
@@ -389,7 +398,7 @@ if __name__ == "__main__":
     SCREEN_WIDTH = 1050 #Screen width size.
     SCREEN_HEIGHT = 600 #Screen height size.
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) #Set Pygame screen.
-    pygame.display.set_caption("To-do List | Made by team 3 (Kyanh, Thien Long)") #Set Pygame screen caption.
+    pygame.display.set_caption("StudoList | Made by Staregos") #Set Pygame screen caption.
     icon = pygame.image.load("icon.png") #Load Pygame screen icon image.
     pygame.display.set_icon(icon) #Set Pygame screen icon.
 
