@@ -2,7 +2,7 @@ import os
 from turtle import title
 import eyed3
 import pygame
-from ToDoList import pixelFont
+from StudoList import pixelFont
 
 #|  PYGAME FUNCTIONS |
 #Def that calculate all text rect width and height:
