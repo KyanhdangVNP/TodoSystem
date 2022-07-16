@@ -437,8 +437,8 @@ class toDoListRect():
         
         #Check if card is activated to edit text on text box in that card:
         #print(self.cardText)
-        if self.id == "card":
-            if self.activating:
+        if self.activating:
+            if self.id == "card" and self.id == "title":
                 for event in events:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_BACKSPACE and not self.cardText == "":
@@ -520,6 +520,7 @@ class toDoList():
         #Draw a transparent rect layer behind to-do list:
         drawRect(screen, xPos, yPos, self.width + (self.padding * 2), self.height, "light gray", self.alpha, "center", 8)
         #Draw title rect (Unused):
+        title = toDoListRect(self.title, pixelFont, self.titleFontSize, self.width, self.titleHeight, self.width - self.cardTextPadding, "title")
         #title = toDoListRect(self.title, pixelFont, self.titleFontSize, self.width, self.titleHeight, self.width - (self.cardTextPadding * 2))
         yPrintText = yPos + self.padding + self.cardTextPadding
         drawText(screen, self.title, pixelFont, self.titleFontSize, xPos, yPrintText, "black", 255, "center", "left")

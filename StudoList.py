@@ -276,10 +276,9 @@ if __name__ == "__main__":
 
         #Setting up default template to-do list:
         weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        works = [["Learn Math", "Study English", "Coding StudoList project", "Learn coding"], ["Do house work", "Cook breakfast", "Learn to make music"], ["Coding StudoList project", "Learn Physics", "Learn English", "Doing art requests"], ["Learn to make game :)", "Learn Math", "Do homeworks", "Making game"], ["Exercising", "Do housework", "Clean the house", "Playing Piano"], ["Making script for game", "Coding StudoList project", "Making music", "Go play football"], ["Playing games", "Go play football", "Making musics", "Drawing arts for own and requests -_-"]]
         toDoLists = []
         for i in range(len(weekday)):
-            k = toDoList(weekday[i], works[i], i + 1)
+            k = toDoList(weekday[i], ["none"], i + 1)
             toDoLists.append(k)
 
         #Starting Pygame screen:
