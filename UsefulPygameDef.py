@@ -240,6 +240,8 @@ class button():
                 self.waitClicked = False
                 self.action = True
             self.clicked = False
+        if not self.rect.collidepoint(pos):
+            self.waitClicked = False
 
         #Vẽ nút bấm lên màn hình:
         if not self.image == None:
@@ -284,7 +286,7 @@ class button():
     #Tạo ra hàm chỉnh lại thành ảnh vẽ khác:
     def changeImg(self, imgChange, size = "balance", x = 0, y = 0):
         if type(imgChange) == str:
-            imgChange = pygame.image.load(imgChange)
+            imgChange = pygame.image.load(imgChange).convert_alpha()
         if size == "balance":
             size = self.sizePercent
             x = self.rect.x
@@ -363,19 +365,21 @@ class button():
         self.slider_startX = startX
         self.slider_endX = endX
         self.slider_value = minValue
+        self.slider_valuePerPercent = (self.slider_endX - self.slider_startX) / (self.slider_maxValue - self.slider_minValue)
     def setSliderX(self, startX, endX):
         self.slider_startX = startX
         self.slider_endX = endX
+
+        self.slider_valuePerPercent = (self.slider_endX - self.slider_startX) / (self.slider_maxValue - self.slider_minValue)
     def setSliderValue(self):
         #Get mouseX, mouseY position:
-        mouseX, mouseY = pygame.mouse.get_pos()
-        self.slider_value = mouseX / self.slider_valuePerPercent
+        mouseX = pygame.mouse.get_pos()[0]
+        self.slider_value = (mouseX - self.slider_startX) / self.slider_valuePerPercent
         if self.slider_value > self.slider_maxValue:
             self.slider_value = self.slider_maxValue
         elif self.slider_value < self.slider_minValue:
             self.slider_value = self.slider_minValue
     def drawSlider(self, screen):
-        self.slider_valuePerPercent = (self.slider_endX - self.slider_startX) / (self.slider_maxValue - self.slider_minValue)
         self.changeXY(self.slider_startX + ((self.slider_value - self.slider_minValue) * self.slider_valuePerPercent), self.rect.y)
         self.draw(screen)
 
@@ -421,47 +425,62 @@ class toDoListRect():
                 self.isColliding = True
                 if self.clicked == False:
                     if self.waitClicked == False:
+                        #if self.id == "title":
+                            #print("TItle click waiting...")
+                        #elif self.id == "newColumnBtn":
+                            #print("New Column Btn click waiting...")
                         self.waitClicked = True
-                        if self.id == "newColumnBtn":
-                            self.action = True
                     self.clicked = True
             else:
                 self.activating = False
+        
         if pygame.mouse.get_pressed()[0] == 0:
-            if not self.rect.collidepoint(pos):
-                self.waitClicked = False
-            elif self.waitClicked == True:
+        #    if self.id == "newColumnBtn":
+        #        print("New Column Btn is not clicked now...", self.waitClicked)
+            if self.waitClicked == True:
                 self.waitClicked = False
                 self.action = True
             self.clicked = False
+        if not self.rect.collidepoint(pos):
+            self.waitClicked = False
+        #if self.id == "newColumnBtn":
+        #    print(self.action)
+
+        #Check if action equal True to add outline to textbox or give permission to edit the text box:
+        if self.action:
+            self.activating = True
         
         #Check if card is activated to edit text on text box in that card:
         #print(self.cardText)
         if self.activating:
-            if self.id == "card" and self.id == "title":
+            if self.id == "card" or self.id == "title":
                 for event in events:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_BACKSPACE and not self.cardText == "":
                             self.cardText = self.cardText[:-1]
                         else:
                             self.cardText += event.unicode
-        
-        #Check if action equal True to add outline to textbox::
-        if self.action:
-            self.activating = True
 
         if self.id == "card":
             textAlign = "left"
             rectColor = "white"
+        elif self.id == "title":
+            textAlign = "center"
+            rectColor = "white"
         else:
             textAlign = "center"
             rectColor = "light gray"
-
-        drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8)
+        
+        if not self.id == "title":
+            drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8)
+        if self.activating:
+            if self.id == "title":
+                drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8)
+            drawRect(screen, x, y, self.width, self.height, "black", 200, "center", 8, 3)
+        
         if len(self.cardText) > 0:
             drawText(screen, self.cardText, pixelFont, self.fontSize, xText, yText, "black", 255, textAlign, "left", self.textWidth)
-        if self.activating and self.id == "card":
-            drawRect(screen, x, y, self.width, self.height, "black", 200, "center", 8, 3)
+
 
 class toDoList():
     def __init__(self, title = "united", toDoList = [], posIndex = 0):
@@ -488,8 +507,12 @@ class toDoList():
         self.toDoList = toDoList
         self.cardList = []
         for i in toDoList:
-            cardClass = toDoListRect(i, pixelFont, self.FontSize, self.width, self.height, self.width - self.cardPadding)
+            cardClass = toDoListRect(i, pixelFont, self.FontSize, self.width, self.height, self.width - self.cardPadding, "card")
             self.cardList.append(cardClass)
+        
+        #Create To-do list none object for using later:
+        self.titleObj = None
+        self.newColumnBtn = None
 
     def drawList(self, screen, events, sliderValue, columns):
         #Check if toDoList column xPos is out of the screen or not:
@@ -516,23 +539,27 @@ class toDoList():
             self.height += self.cardPadding + cardHeight
         self.height += (self.padding * 2) + self.titleHeight
         #print(xPos, self.title)
-        yPos = self.rect.y - (self.titleHeight / 2) - self.padding
+        yPos = self.rect.y - ((self.titleFontSize + 15) / 2) - self.padding
         #Draw a transparent rect layer behind to-do list:
         drawRect(screen, xPos, yPos, self.width + (self.padding * 2), self.height, "light gray", self.alpha, "center", 8)
-        #Draw title rect (Unused):
-        title = toDoListRect(self.title, pixelFont, self.titleFontSize, self.width, self.titleHeight, self.width - self.cardTextPadding, "title")
-        #title = toDoListRect(self.title, pixelFont, self.titleFontSize, self.width, self.titleHeight, self.width - (self.cardTextPadding * 2))
+        print(self.title)
+        if self.titleObj == None:
+            self.titleObj = toDoListRect(self.title, pixelFont, self.titleFontSize, self.width, self.titleHeight, self.width - self.cardTextPadding, "title")
+        self.titleHeight = calSizeText(self.titleObj.cardText, pixelFont, self.titleFontSize, self.width - 10)[1] + 15
+        self.titleObj.height = self.titleHeight
         yPrintText = yPos + self.padding + self.cardTextPadding
-        drawText(screen, self.title, pixelFont, self.titleFontSize, xPos, yPrintText, "black", 255, "center", "left")
+        # screen, self.title, pixelFont, self.titleFontSize, xPos, yPrintText, "black", 255, "center", "left"
+        self.titleObj.draw(screen, events, xPos, yPrintText, xPos, yPrintText)
         #drawRect(screen, xPos, yPos + self.padding, self.width, self.titleHeight, (185, 255, 255), 200, "center", 8)
         #Draw button "Create a column":
         returnValue = None
         if self.posIndex == columns:
-            newColumnBtn = toDoListRect("Create new column", pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn")
-            newColumnBtnX = xPos + (self.width + (self.padding * 2) + 20)
-            newColumnBtn.draw(screen, events, newColumnBtnX, yPos, newColumnBtnX, yPos + self.cardTextPadding - 2)
+            if self.newColumnBtn == None:
+                self.newColumnBtn = toDoListRect("Create new column", pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn")
+            self.newColumnBtnX = xPos + (self.width + (self.padding * 2) + 20)
+            self.newColumnBtn.draw(screen, events, self.newColumnBtnX, yPos, self.newColumnBtnX, yPos + self.cardTextPadding - 2)
             #print(newColumnBtn.activating)
-            if newColumnBtn.action:
+            if self.newColumnBtn.action:
                 returnValue = "createNewColumn"
 
         self.isColliding = False
@@ -558,6 +585,8 @@ class toDoList():
                 self.waitClicked = False
                 self.action = True
             self.clicked = False
+        if not self.rect.collidepoint(pos):
+            self.waitClicked = False
         
         #Vẽ chữ lên màn hình:
         #Tạo ra font, chữ:
@@ -603,7 +632,7 @@ class toDoList():
 
     def changeImg(self, imgChange):
         if type(imgChange) == str:
-            imgChange = pygame.image.load(imgChange)
+            imgChange = pygame.image.load(imgChange).convert_alpha()
         size = self.sizePercent
         x = self.rect.x
         y = self.rect.y

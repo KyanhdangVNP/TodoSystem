@@ -83,18 +83,18 @@ if __name__ == "__main__":
             #Draw Background:
             if themeType == "dark":
                 if BGType == "normal":
-                    BGImg = pygame.image.load("img/MainBG_dark.png")
+                    BGImg = pygame.image.load("img/MainBG_dark.png").convert_alpha()
                 elif BGType == "blur":
-                    BGImg = pygame.image.load("img/MainBG_dark_Blur.png")
+                    BGImg = pygame.image.load("img/MainBG_dark_Blur.png").convert_alpha()
                 #elif BGType == "noText":
-                #    BGImg = pygame.image.load("img/MainBG_NoText_dark.png")
+                #    BGImg = pygame.image.load("img/MainBG_NoText_dark.png").convert_alpha()
             else:
                 if BGType == "normal":
-                    BGImg = pygame.image.load("img/MainBG.png")
+                    BGImg = pygame.image.load("img/MainBG.png").convert_alpha()
                 elif BGType == "blur":
-                    BGImg = pygame.image.load("img/MainBG_Blur.png")
+                    BGImg = pygame.image.load("img/MainBG_Blur.png").convert_alpha()
                 #elif BGType == "noText":
-                #    BGImg = pygame.image.load("img/MainBG_NoText.png")
+                #    BGImg = pygame.image.load("img/MainBG_NoText.png").convert_alpha()
             
             BGImg = pygame.transform.scale(BGImg, (SCREEN_WIDTH, SCREEN_HEIGHT)).convert_alpha()
             screen.blit(BGImg, (0, 0))
@@ -301,9 +301,9 @@ if __name__ == "__main__":
 
             #Draw Background:
             if themeType == "dark":
-                BGImg = pygame.image.load("img/MainBG_dark.png")
+                BGImg = pygame.image.load("img/MainBG_dark.png").convert_alpha()
             else:
-                BGImg = pygame.image.load("img/MainBG.png")
+                BGImg = pygame.image.load("img/MainBG.png").convert_alpha()
             
             BGImg = pygame.transform.scale(BGImg, (SCREEN_WIDTH, SCREEN_HEIGHT)).convert_alpha()
             screen.blit(BGImg, (0, 0))
@@ -318,7 +318,10 @@ if __name__ == "__main__":
             sliderBtn.setSliderX(38, SCREEN_WIDTH - 38)
             sliderBtn.changeXY(sliderBtn.rect.x, SCREEN_HEIGHT - 68)
             sliderBtn.drawSlider(screen)
-
+            #Printing sliderBtmn values for testing errors
+            #print(sliderBtn.slider_value)
+            #print(pygame.mouse.get_pos()[0])
+            #print(f"SliderBtnX: {sliderBtn.rect.x + sliderBtn.image.get_width() / 2}")
             #Draw menu buttons:
             drawRect(screen, 0, 0, SCREEN_WIDTH, 75, (205, 235, 243), 200)
 
@@ -336,9 +339,11 @@ if __name__ == "__main__":
                 pass
 
             #Draw To-do lists:
+            createdNewCColumn = False
             for i in toDoLists:
                 if i.drawList(screen, events, sliderBtn.slider_value, len(toDoLists)) == "createNewColumn":
                     toDoLists.append(toDoList("united list", ["United work"], len(toDoLists) + 1))
+                    createdNewCColumn = True
 
             
             for event in events:
@@ -366,10 +371,11 @@ if __name__ == "__main__":
             if not screenFinalAction == None:
                 break
             
-            pygame.display.flip()
-            pygame.display.update()
+            pygame.display.flip() # Flip the screen...??
+            pygame.display.update() # Updating the screen.
 
         CheckScreenFinalAction(screenFinalAction)
+
 
     
     #Def to check screen final action to change to new screen
@@ -398,27 +404,29 @@ if __name__ == "__main__":
     SCREEN_HEIGHT = 600 #Screen height size.
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) #Set Pygame screen.
     pygame.display.set_caption("StudoList | Made by Staregos") #Set Pygame screen caption.
-    icon = pygame.image.load("icon.png") #Load Pygame screen icon image.
+    icon = pygame.image.load("icon.png").convert_alpha() #Load Pygame screen icon image.
     pygame.display.set_icon(icon) #Set Pygame screen icon.
 
 
     #Initzile:
-    pygame.init()
-    SCREEN_WIDTH = 1050
-    SCREEN_HEIGHT = 600
-    SCREEN_WIDTH_LAST = SCREEN_WIDTH
-    SCREEN_HEIGHT_LAST = SCREEN_HEIGHT
-    screenName = "mainMenu"
-    themeType = "light"
-    FPS = 60
+    pygame.mixer.pre_init(44100, 16, 2, 4096) #Initzile Pygame.mixer to get the mixer runs faster.
+    pygame.init() # Initzile Pygame.
+    SCREEN_WIDTH = 1050 #Varible for the screen width.
+    SCREEN_HEIGHT = 600 # Varible for the screen height.
+    SCREEN_WIDTH_LAST = SCREEN_WIDTH # Varible for checking the difference between screen_width and screen_width last.
+    SCREEN_HEIGHT_LAST = SCREEN_HEIGHT # Varible for checking the difference between screen_height and screen_height last.
+    screenName = "mainMenu" # Set up screenName for the main menu scene.
+    themeType = "light" # Set up theme for the screen ("light" is default).
+    FPS = 60 # Set up FPS (60 is default).
 
     #Starting main menu of program:
-    musicList = os.listdir("./Musics")
-    musicCurrent = musicList[5]
-    musicLast = musicCurrent
-    musicInfo = getAudioInfo(f"Musics/{musicCurrent}")
-    playMusic(f"Musics/{musicCurrent}")
-    pygame.mixer.music.set_volume(1.0)
+    # Setting up the music list in folder Musics:
+    musicList = os.listdir("./Musics") # Get list of music file names in folder Musics.
+    musicCurrent = musicList[5] # Set up default starting music for the program.
+    musicLast = musicCurrent # Set up music last.
+    musicInfo = getAudioInfo(f"Musics/{musicCurrent}") # Get default starting music info.
+    playMusic(f"Musics/{musicCurrent}") # Play default starting music to the program when first run.
+    pygame.mixer.music.set_volume(1.0) # Set up volume (1.0 is default, 1.0 is full volume).
 
-    screenFinalAction = "mainMenu"
-    CheckScreenFinalAction(screenFinalAction)
+    screenFinalAction = "mainMenu" # Important varible to set up the whole Main menu screen at the start of the program.
+    CheckScreenFinalAction(screenFinalAction) # Running the whole main menu screen with value "mainMenu".
