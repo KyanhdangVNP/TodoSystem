@@ -254,8 +254,6 @@ if __name__ == "__main__":
             
             pygame.display.flip()
             pygame.display.update()
-        
-        CheckScreenFinalAction(screenFinalAction)
     
     def mainScreen():
         global screen
@@ -455,21 +453,23 @@ if __name__ == "__main__":
             pygame.display.flip() # Flip the screen...??
             pygame.display.update() # Updating the screen.
 
-        CheckScreenFinalAction(screenFinalAction)
-
 
     
     #Def to check screen final action to change to new screen
-    def CheckScreenFinalAction(action):
-        if action == "mainMenu":
+    def CheckScreenFinalAction():
+        global screenFinalAction
+        if screenFinalAction == "mainMenu":
             print("|| MAIN MENU... ||")
             mainMenu()
-        elif action == "mainScreen":
+        elif screenFinalAction == "mainScreen":
             print("|| MAIN SCREEN... ||")
             mainScreen()
-        elif action == "exitProgram":
+        elif screenFinalAction == "exitProgram":
             print("|| PROJECT QUITTING... ||")
             pygame.quit()
+            return False
+        
+        CheckScreenFinalAction()
     
     #Load fonts:
 
@@ -527,4 +527,4 @@ if __name__ == "__main__":
     pygame.mixer.music.set_volume(1.0) # Set up volume (1.0 is default, 1.0 is full volume).
 
     screenFinalAction = "mainMenu" # Important varible to set up the whole Main menu screen at the start of the program.
-    CheckScreenFinalAction(screenFinalAction) # Running the whole main menu screen with value "mainMenu".
+    CheckScreenFinalAction() # Running the whole main menu screen with value "mainMenu".
