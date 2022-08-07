@@ -198,6 +198,7 @@ class button():
         self.clicked = False
         self.waitClicked = False
         self.clickedOutside = False
+        self.test = None
         self.brightnessTouch = True
 
     def draw(self, screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size = 24, color = "black", themeType = None, alignText = "center", offsetText = (0, 0)):
@@ -236,6 +237,9 @@ class button():
         self.brightness = None
         self.clickedOutside = False
         pos = pygame.mouse.get_pos()
+
+        if not self.test == None:
+            print(f"{self.test} brightness before: {self.brightness}")
         
         #Kiểm tra vị trí của chuột có chạm vào nút không:
         if self.touchable:
@@ -260,6 +264,9 @@ class button():
             
             if self.waitClicked and self.brightnessTouch:
                 self.brightness = -51
+        
+        if not self.test == None:
+            print(f"{self.test} brightness middle: {self.brightness}")
 
         #Vẽ nút bấm lên màn hình:
         if not self.image == None:
@@ -273,8 +280,14 @@ class button():
                 else:
                     self.brightness *= -1
                     imageFill.fill((self.brightness, self.brightness, self.brightness), special_flags=pygame.BLENDMODE_ADD)
+            screen.blit(self.image, (self.rect.x - 300, self.rect.y))
             screen.blit(imageFill, (self.rect.x, self.rect.y))
+            screen.blit(self.image, (self.rect.x + 300, self.rect.y))
+            print(id(imageFill))
+            print(id(self.image))
             #self.rect = imageFill.get_rect()
+        if not self.test == None:
+            print(f"{self.test} brightness after: {self.brightness}")
         
         #Vẽ chữ lên màn hình:
         if not text == '':
@@ -418,19 +431,12 @@ class button():
         self.draw(screen)
 
 #Pygame rect functions:
-def drawRect(screen, x, y, width, height, color, alpha = 255, align = None, roundness = 0, outlineSize = 0, brightness = 0):
+def drawRect(screen, x, y, width, height, color, alpha = 255, align = None, roundness = 0, outlineSize = 0):
     rect = pygame.Surface((width, height), pygame.SRCALPHA)
-    #self.rect = imageFill.get_rect()
     if align == "center":
         x -= rect.get_width() / 2
         #y -= rect.get_height() / 2
     pygame.draw.rect(rect, color, rect.get_rect(), outlineSize, roundness)
-    if not brightness == 0:
-        if brightness >= 0:
-            rect.fill((brightness, brightness, brightness), special_flags=pygame.BLEND_RGB_ADD)
-        else:
-            brightness *= -1
-            rect.fill((brightness, brightness, brightness), special_flags=pygame.BLENDMODE_ADD)
     rect.set_alpha(alpha)
     screen.blit(rect, (x, y))
 
@@ -438,7 +444,7 @@ def drawRect(screen, x, y, width, height, color, alpha = 255, align = None, roun
 
 #| IMPORTANT FUNCTIONS TO CREATES TO-DO LISTS |
 class toDoListRect():
-    def __init__(self, cardText = "unkown", font = "Fonts/MinecraftBold.otf", fontSize = 20, width = 240, height = 70, textWidth = 0, id = "card", brightness1 = -15, brightness2 = -75):
+    def __init__(self, cardText = "unkown", font = "Fonts/MinecraftBold.otf", fontSize = 20, width = 240, height = 70, textWidth = 0, id = "card"):
         self.cardText = cardText
         self.font = font
         self.fontSize = fontSize
@@ -456,30 +462,25 @@ class toDoListRect():
         self.isColliding = False
         #print(self.cardText)
 
-        #Rect effect :D
-        self.brightness1 = brightness1
-        self.brightness2 = brightness2
-
         #Textbox varibles?
         self.indexText = 0
     def draw(self, screen, events, x, y, xText, yText):
         self.rect = pygame.Rect(x - (self.width / 2), y, self.width, self.height)
         self.isColliding = False
         self.action = False
-        brightness = 0
         pos = pygame.mouse.get_pos()
         #Kiểm tra vị trí của chuột có chạm vào nút không:
-        if self.rect.collidepoint(pos):
-            self.isColliding = True
-            brightness = self.brightness1
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                if self.waitClicked == False:
-                    #elif self.id == "newColumnBtn":
-                        #print("New Column Btn click waiting...")
-                    self.waitClicked = True
-                self.clicked = True
-        elif pygame.mouse.get_pressed()[0] == 1:
-            self.activating = False
+        if pygame.mouse.get_pressed()[0] == 1:
+            if self.rect.collidepoint(pos):
+                self.isColliding = True
+                if self.clicked == False:
+                    if self.waitClicked == False:
+                        #elif self.id == "newColumnBtn":
+                            #print("New Column Btn click waiting...")
+                        self.waitClicked = True
+                    self.clicked = True
+            else:
+                self.activating = False
         
         if pygame.mouse.get_pressed()[0] == 0:
             if self.waitClicked == True:
@@ -490,8 +491,6 @@ class toDoListRect():
             self.clicked = False
         if not self.rect.collidepoint(pos):
             self.waitClicked = False
-        if self.waitClicked:
-            brightness = self.brightness2
         
         #Check if card is activated to edit text on text box in that card:
         #print(self.cardText)
@@ -535,14 +534,15 @@ class toDoListRect():
         
         
         if not self.id == "title":
-            drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8, brightness = brightness)
-        if self.id == "title" and not brightness == 0:
-            drawRect(screen, x, y, self.width, self.height, "white", 200, "center", 8, brightness = brightness)
-            
+            drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8)
         if self.activating:
             if self.id == "title":
                 drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8)
             drawRect(screen, x, y, self.width, self.height, "black", 200, "center", 8, 3)
+        
+        #Filling dark color to rect when the rect is collided & clicked by the mouse cursor.
+        if self.isColliding:
+            drawRect(screen, x, y, self.width, self.height, "dark gray", 150, "center", 8)
 
         if len(self.cardText) > 0:
             drawText(screen, self.cardText, pixelFont, self.fontSize, xText, yText, "black", 255, textAlign, "left", self.textWidth)
@@ -620,7 +620,7 @@ class toDoList():
         returnValue = None
         if self.posIndex == columns:
             if self.newColumnBtn == None:
-                self.newColumnBtn = toDoListRect("Create new column", pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn", 15, -60)
+                self.newColumnBtn = toDoListRect("Create new column", pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn")
             self.newColumnBtnX = xPos + (self.width + (self.padding * 2) + 20)
             self.newColumnBtn.draw(screen, events, self.newColumnBtnX, yPos, self.newColumnBtnX, yPos + self.cardTextPadding - 2)
             #print(newColumnBtn.activating)
