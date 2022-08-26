@@ -4,13 +4,16 @@ import pygame
 import tkinter
 import tkinter.filedialog
 from copy import copy
+import csv
 
 from StudoList import pixelFont
 
 #|  PYGAME FUNCTIONS |
 #Def that calculate all text rect width and height:
 def calSizeText(text = "", fontName = "Fonts/MinecraftBold.otf", size = 24, boxWidth = None):
-    if not text == "":
+    if text == "" or text == None or len(text) == 0:
+        return [0, round(size * 0.6)]
+    else:
         #Tạo ra font, chữ:
         font = pygame.font.Font(fontName, size)
         
@@ -615,9 +618,11 @@ class toDoList():
         yPrintText = yPos + self.padding + self.cardTextPadding
         # screen, self.title, pixelFont, self.titleFontSize, xPos, yPrintText, "black", 255, "center", "left"
         self.titleObj.draw(screen, events, xPos, yPrintText, xPos, yPrintText)
+        if self.titleObj.cardText != self.title:
+            self.title = self.titleObj.cardText
         #drawRect(screen, xPos, yPos + self.padding, self.width, self.titleHeight, (185, 255, 255), 200, "center", 8)
         #Draw button "Create a column":
-        returnValue = None
+        returnValue = []
         if self.posIndex == columns:
             if self.newColumnBtn == None:
                 self.newColumnBtn = toDoListRect("Create new column", pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn", 15, -60)
@@ -625,7 +630,7 @@ class toDoList():
             self.newColumnBtn.draw(screen, events, self.newColumnBtnX, yPos, self.newColumnBtnX, yPos + self.cardTextPadding - 2)
             #print(newColumnBtn.activating)
             if self.newColumnBtn.action:
-                returnValue = "createNewColumn"
+                returnValue.append("createNewColumn")
 
         self.isColliding = False
         self.action = False
@@ -739,7 +744,10 @@ def getAudioInfo(path):
 
 
 
+# | | SYSTEM DEFS | |
+
 #| Tkinter Functions (IMPORTANT FOR SYSTEM GUI) |
+#Open file system:
 def openFile():
     """Create a Tk file dialog and cleanup when finished"""
     top = tkinter.Tk()
@@ -753,4 +761,97 @@ def openFile():
 
     fileName = tkinter.filedialog.askopenfilename(parent = top, title = "Please select file", filetypes = fileTypes)
     print(fileName)
+    if fileName == "":
+        return False
     top.destroy()
+    file = open(fileName, "r", encoding='UTF8')
+    reader = csv.reader(file)
+    fileRows = []
+    for row in reader:
+        fileRows.append(row)
+
+    canChangeColumn = True
+    k = 0
+    tableRead = []
+    reader = csv.reader(file)
+    while canChangeColumn:
+        canChangeColumn = False
+        listAppend = []
+        for i in fileRows:
+            if k < len(i):
+                listAppend.append(i[k])
+                canChangeColumn = True
+        if not listAppend == []:
+            tableRead.append(listAppend)
+        k += 1
+    
+    print("Table have changed!", tableRead)
+
+    toDoLists = []
+    for i in range(0, len(tableRead)):
+        toDoLists.append(toDoList(tableRead[i][0], tableRead[i][1:], i + 1))
+    
+    return toDoLists
+
+#Saving file system:
+def saveFile(tableList):
+    """Create a Tk file dialog and cleanup when finished"""
+    top = tkinter.Tk()
+    top.withdraw()  # hide window
+
+    fileExtensions = ["*.csv"]
+    fileTypes = [
+        ("Table files", fileExtensions),
+        ("All files", "*")
+    ]
+
+    file = tkinter.filedialog.asksaveasfile(parent = top, title = "Please select save location", filetypes = fileTypes)
+    if file == None:
+        print("No file was opened.")
+        return False
+    fileName = file.name
+    file.close()
+    top.destroy()
+    file = open(fileName, 'w', encoding='UTF8', newline='')
+
+    tableWrite = []
+    titleList = []
+    for i in tableList:
+        titleList.append(i.title)
+    tableWrite.append(titleList)
+    
+    canChangeColumn = True
+    k = 0
+    while canChangeColumn:
+        canChangeColumn = False
+        emptyCount = 0
+        listAppend = []
+        for i in tableList:
+            if k < len(i.toDoList):
+                listAppend.append(i.toDoList[k])
+                canChangeColumn = True
+            else:
+                listAppend.append("")
+                emptyCount += 1
+        print(emptyCount, len(tableList))
+        #Checking that if all elements in the listAppend is empty like "":
+        if emptyCount == len(tableList):
+            break
+        tableWrite.append(listAppend)
+        k += 1
+    
+    print(tableWrite, "ok")
+
+    writer = csv.writer(file)
+    writer.writerows(tableWrite)
+
+    file.close()
+    file = open(fileName, "r", encoding='UTF8')
+
+
+    csvFile = csv.reader(file)
+    
+    # displaying the contents of the CSV file 
+    print("READING CSV FILE...")
+    for lines in csvFile:
+        print(lines)
