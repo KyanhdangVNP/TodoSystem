@@ -386,7 +386,9 @@ if __name__ == "__main__":
 
                 #Draw To-do lists:
                 for i in toDoLists:
-                    if i.drawList(screen, events, sliderBtn.slider_value, len(toDoLists)) == "createNewColumn":
+                    toDoListReturnValue = i.drawList(screen, events, sliderBtn.slider_value, len(toDoLists))
+                    print(toDoListReturnValue)
+                    if not toDoListReturnValue and "createNewColumn" in toDoListReturnValue:
                         toDoLists.append(toDoList("united list", ["United work"], len(toDoLists) + 1))
                 
                 #Draw the opening menu (The code should on the bottom so that it will be draw after and in front of other things):

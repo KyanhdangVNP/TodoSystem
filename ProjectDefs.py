@@ -532,6 +532,9 @@ class toDoListRect():
         elif self.id == "title":
             textAlign = "center"
             rectColor = "white"
+        elif self.id == "btn":
+            textAlign = "center"
+            rectColor = "gray95"
         else:
             textAlign = "center"
             rectColor = "light gray"
@@ -583,6 +586,11 @@ class toDoList():
         self.titleObj = None
         self.newColumnBtn = None
 
+        #Create card btn variables:
+        self.createCardBtn_height = self.FontSize + 12
+        self.createCardBtn_text = "New card"
+        self.createCardBtn = toDoListRect(self.createCardBtn_text, pixelFont, self.FontSize, self.width, self.createCardBtn_height, self.width - self.cardPadding, "btn")
+
     def drawList(self, screen, events, sliderValue, columns):
         #Check if toDoList column xPos is out of the screen or not:
         allcolumnsWidth = (30 * 2 + self.width / 2) + (self.width + (self.padding * 2) + 20) * (columns - 1)
@@ -601,7 +609,8 @@ class toDoList():
                 cardHeightList.append(cardTextHeight + (self.cardTextPadding * 2))
             else:
                 cardHeightList.append(self.FontSize + 2)
-            
+        cardHeightList.append(self.createCardBtn_height)
+        
         #Set width of to-do list rect depends on how many things are listed in list:
         self.height = 0
         for cardHeight in cardHeightList:
@@ -691,7 +700,13 @@ class toDoList():
             self.cardList[i].height = cardHeightList[i]
             self.cardList[i].draw(screen, events, xPos, cardY, xPos - (self.width / 2) + self.cardPadding, cardY + self.cardTextPadding - 2)
             cardY += cardHeightList[i] + self.cardPadding
-
+        
+        #Draw create new card btn:
+        self.createCardBtn.draw(screen, events, xPos, cardY, xPos + self.cardPadding, cardY + self.cardTextPadding - 2)
+        if self.createCardBtn.action:
+            cardClass = toDoListRect("None", pixelFont, self.FontSize, self.width, self.height, self.width - self.cardPadding, "card")
+            self.toDoList.append(cardClass)
+        
 
         return returnValue
     
