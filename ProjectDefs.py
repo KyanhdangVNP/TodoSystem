@@ -8,6 +8,24 @@ import csv
 
 from StudoList import pixelFont
 
+#| FUNCTIONS TO GET GAME INFORMATION IN FIRST OPENING |
+#Def that takes language information to put into buttons, text content (default language is English):
+langInfo = {}
+def getLanuageInfo(lang):
+    global langInfo
+
+    langFile = open(f"Languages/{lang}", "r", encoding = "UTF-8")
+    dictionary = {}
+    for line in langFile:
+        if not line == "\n" and ":" in line and not "#" in line:
+            (key, value) = line.split(":", 1)
+            dictionary[key.strip()] = value.strip()
+    
+    langFile.close()
+    langInfo = dictionary
+    return dictionary
+
+
 #|  PYGAME FUNCTIONS |
 #Def that calculate all text rect width and height:
 def calSizeText(text = "", fontName = "Fonts/MinecraftBold.otf", size = 24, boxWidth = None):
@@ -451,6 +469,7 @@ class toDoListRect():
 
         #Important varibles:
         self.activating = False
+        self.canActivating = True
         self.id = id
         
         #Clicked varibles:
@@ -498,7 +517,7 @@ class toDoListRect():
         
         #Check if card is activated to edit text on text box in that card:
         #print(self.cardText)
-        if self.activating:
+        if self.activating and self.canActivating:
             if self.id == "card" or self.id == "title":
                 for event in events:
                     if event.type == pygame.KEYDOWN:
@@ -545,7 +564,7 @@ class toDoListRect():
         if self.id == "title" and not brightness == 0:
             drawRect(screen, x, y, self.width, self.height, "white", 200, "center", 8, brightness = brightness)
             
-        if self.activating:
+        if self.activating and self.canActivating:
             if self.id == "title":
                 drawRect(screen, x, y, self.width, self.height, rectColor, 200, "center", 8)
             drawRect(screen, x, y, self.width, self.height, "black", 200, "center", 8, 3)
@@ -588,10 +607,13 @@ class toDoList():
 
         #Create card btn variables:
         self.createCardBtn_height = self.FontSize + 12
-        self.createCardBtn_text = "New card"
+        self.createCardBtn_text = langInfo["newCardBtn"]
         self.createCardBtn = toDoListRect(self.createCardBtn_text, pixelFont, self.FontSize, self.width, self.createCardBtn_height, self.width - self.cardPadding, "btn")
+        self.createCardBtn.canActivating = False
 
     def drawList(self, screen, events, sliderValue, columns):
+        self.createCardBtn_text = langInfo["newCardBtn"]
+
         #Check if toDoList column xPos is out of the screen or not:
         allcolumnsWidth = (30 * 2 + self.width / 2) + (self.width + (self.padding * 2) + 20) * (columns - 1)
         slideXChange = allcolumnsWidth * (sliderValue / 100)
@@ -634,7 +656,7 @@ class toDoList():
         returnValue = []
         if self.posIndex == columns:
             if self.newColumnBtn == None:
-                self.newColumnBtn = toDoListRect("Create new column", pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn", 15, -60)
+                self.newColumnBtn = toDoListRect(langInfo["newColumnBtn"], pixelFont, self.titleFontSize, self.width, 70, self.width, "newColumnBtn", 15, -60)
             self.newColumnBtnX = xPos + (self.width + (self.padding * 2) + 20)
             self.newColumnBtn.draw(screen, events, self.newColumnBtnX, yPos, self.newColumnBtnX, yPos + self.cardTextPadding - 2)
             #print(newColumnBtn.activating)
@@ -694,7 +716,7 @@ class toDoList():
 
         #Draw card rects and card texts:
         cardY = yPos + self.titleHeight + self.padding + self.cardPadding
-        for i in range(len(self.toDoList)):
+        for i in range(len(self.cardList)):
             #self.cardDraw(screen, cardName, xPos, cardY, self.width, cardHeightList[i])
             self.toDoList[i] = self.cardList[i].cardText
             self.cardList[i].height = cardHeightList[i]
@@ -704,9 +726,14 @@ class toDoList():
         #Draw create new card btn:
         self.createCardBtn.draw(screen, events, xPos, cardY, xPos + self.cardPadding, cardY + self.cardTextPadding - 2)
         if self.createCardBtn.action:
-            cardClass = toDoListRect("None", pixelFont, self.FontSize, self.width, self.height, self.width - self.cardPadding, "card")
-            self.toDoList.append(cardClass)
-        
+            newCardName = "none"
+            cardClass = toDoListRect(newCardName, pixelFont, self.FontSize, self.width, self.height, self.width - self.cardPadding, "card")
+            print(cardClass.cardText)
+            self.cardList.append(cardClass)
+            self.toDoList.append(newCardName)
+
+        if self.title == "Monday":
+            print(self.height)
 
         return returnValue
     

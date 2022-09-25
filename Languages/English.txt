@@ -1,0 +1,40 @@
+Language: English
+
+#MAIN MENU SCREEN:
+startProgramText: Click any button to start program
+startBtn: Start
+settingsBtn: Settings
+exitBtn: Exit
+
+smallCreditText: Made by Staregos Team
+
+
+#SETTINGS SCREEN:
+settingsTitle: | SETTINGS |
+backBtn: BACK
+
+themeSection: Themes:
+
+volumeSection: Volume:
+
+musicSection: Musics:
+artistText: Artist:
+
+languagesSection: Languages:
+
+
+#MAIN WORKING SCREEN:
+# Top menu section:
+fileMenuBtn: File
+fileMenu_newBtn: New
+fileMenu_openBtn: Open
+fileMenu_saveAsBtn: Save As
+fileMenu_exitBtn: Exit
+editMenuBtn: Edit
+settingsMenuBtn: Settings
+
+# Main part section:
+newColumnBtn: Create new column
+newCardBtn: New card
+newColumnDefaultTitle: Blank list
+newCardDefaultText: blank

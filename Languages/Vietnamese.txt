@@ -1,0 +1,40 @@
+Language: Tiếng Việt
+
+#GIAO DIỆN MÀN HÌNH MENU CHÍNH:
+startProgramText: Hãy nhấn bất kỳ nút nào để vào menu
+startBtn: Bắt đầu
+settingsBtn: Cài đặt
+exitBtn: Thoát
+
+smallCreditText: Được làm bởi nhóm Staregos
+
+
+#GIAO DIỆN CÀI ĐẶT:
+settingsTitle: | CÀI ĐẶT |
+backBtn: TRỞ VỀ
+
+themeSection: Giao diện:
+
+volumeSection: Âm lượng:
+
+musicSection: Nhạc:
+artistText: Được làm bởi:
+
+languagesSection: Ngôn ngữ:
+
+
+#MAIN WORKING SCREEN:
+# Top menu section:
+fileMenuBtn: Tệp
+fileMenu_newBtn: Mới
+fileMenu_openBtn: Mở
+fileMenu_saveAsBtn: Lưu thành
+fileMenu_exitBtn: Thoát
+editMenuBtn: Chỉnh sửa
+settingsMenuBtn: Cài đặt
+
+# Main part section:
+newColumnBtn: Tạo cột mới
+newCardBtn: Tạo thẻ mới
+newColumnDefaultTitle: Cột trống
+newCardDefaultText: Thẻ trống
