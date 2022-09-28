@@ -258,20 +258,20 @@ if __name__ == "__main__":
                         mainMenuStart = True
                 
                 #Get another value of screen width, screen height and check if the screen size is different, so that the screen changes into BG size.
-                #if event.type == pygame.VIDEORESIZE:
-                #    SCREEN_WIDTH_LAST, SCREEN_HEIGHT_LAST = pygame.display.get_surface().get_size()
-                #    if SCREEN_WIDTH != SCREEN_WIDTH_LAST:
-                #        screen = pygame.display.set_mode((event.size[0], event.size[0] / 1.75), pygame.RESIZABLE)
-                #        SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
-                #        print(event.size)
-                #    elif SCREEN_HEIGHT != SCREEN_HEIGHT_LAST:
-                #        screen = pygame.display.set_mode((event.size[1] * 1.75, event.size[1]), pygame.RESIZABLE)
-                #        SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
-                #        print(event.size)
-                #    
-                #    if SCREEN_HEIGHT < 510 or SCREEN_WIDTH < 892.5:
-                #        screen = pygame.display.set_mode((510 * 1.75, 510), pygame.RESIZABLE)
-                #        print(event.size)
+                if event.type == pygame.VIDEORESIZE:
+                    SCREEN_WIDTH_LAST, SCREEN_HEIGHT_LAST = pygame.display.get_surface().get_size()
+                    if SCREEN_WIDTH != SCREEN_WIDTH_LAST:
+                        screen = pygame.display.set_mode((event.size[0], event.size[0] / 1.75), pygame.RESIZABLE)
+                        SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
+                        print(event.size)
+                    elif SCREEN_HEIGHT != SCREEN_HEIGHT_LAST:
+                        screen = pygame.display.set_mode((event.size[1] * 1.75, event.size[1]), pygame.RESIZABLE)
+                        SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
+                        print(event.size)
+                    
+                    if SCREEN_HEIGHT < 510 or SCREEN_WIDTH < 892.5:
+                        screen = pygame.display.set_mode((510 * 1.75, 510), pygame.RESIZABLE)
+                        print(event.size)
                 
                 if event.type == pygame.VIDEORESIZE:
                     SCREEN_WIDTH_LAST, SCREEN_HEIGHT_LAST = pygame.display.get_surface().get_size()

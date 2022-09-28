@@ -28,12 +28,12 @@ def getLanuageInfo(lang):
 
 #|  PYGAME FUNCTIONS |
 #Def that calculate all text rect width and height:
-def calSizeText(text = "", fontName = "Fonts/MinecraftBold.otf", size = 24, boxWidth = None):
+def calSizeText(text = "", fontName = pixelFont, size = 24, boxWidth = None):
     if text == "" or text == None or len(text) == 0:
         return [0, round(size * 0.6)]
     else:
         #Tạo ra font, chữ:
-        font = pygame.font.Font(fontName, size)
+        ##font = pygame.font.Font(fontName, size)
         
         #Tìm ra giá trị x và y của text chuẩn bị vẽ:
         lines = text.splitlines()
@@ -44,8 +44,9 @@ def calSizeText(text = "", fontName = "Fonts/MinecraftBold.otf", size = 24, boxW
             line = lines[lineIndex]
             #print(lines)
             if not boxWidth == None:
-                word = font.render(line, 0, "black")
-                lineWidth = word.get_width()
+                ##word = font.render(line, 0, "black")
+                ##lineWidth = word.get_width()
+                lineWidth = textSize(line, fontName, size)
                 lineChange1 = line
                 lineChange2 = ""
                 #print(f"""line: {line}
@@ -63,20 +64,22 @@ def calSizeText(text = "", fontName = "Fonts/MinecraftBold.otf", size = 24, boxW
                             lineChange2 = lastWord
                             lines[lineIndex] = lineChange1
                             lineChange2List.insert(0, lineChange2)
-                            lineWidth = font.render(lineChange1, 0, "black").get_width()
+                            lineWidth = textSize(lineChange1, fontName, size)
+                            ##lineWidth = font.render(lineChange1, 0, "black").get_width()
                         lines.insert(lineIndex + 1, " ".join(lineChange2List))
-                        if lineWidth > boxWidth:
-                            lineChange2 = ""
+                        if lineWidth > boxWidth:        #SHOULD CHECKING LATER (NOT IMPORTANT)
+                            lineChange2 = ""            #SHOULD CHECKING LATER (NOT IMPORTANT)
                         #print(lines)
                         #print(lineChange1)
                         #print(lineChange2)
-                    if lineWidth > boxWidth:
+                    if lineWidth > boxWidth:            #WILL BE CHECKING LATER (CONFUSING)
                         #print("Moving Key")
                         while lineWidth > boxWidth:
                             lineChange2 = lineChange1[-1] + lineChange2
                             lineChange1 = lineChange1[:-1]
-                            word = font.render(lineChange1, 0, "black")
-                            lineWidth = word.get_width()
+                            ##word = font.render(lineChange1, 0, "black")
+                            ##lineWidth = word.get_width()
+                            lineWidth = textSize(lineChange1, fontName, size)
                         lines[lineIndex] = lineChange1
                         lines.insert(lineIndex + 1, lineChange2)
             lineIndex += 1
@@ -85,16 +88,17 @@ def calSizeText(text = "", fontName = "Fonts/MinecraftBold.otf", size = 24, boxW
             if(len(line) > max_length):
                 max_length = len(line)
                 max_len_line = line
-        textPrint = font.render(max_len_line, 1, "black")
+        ##textPrint = font.render(max_len_line, 1, "black")
         
         #Create loop to calculate height and width all text when rendered:
-        textWidth = textPrint.get_width()
+        ##textWidth = textPrint.get_width()
+        textWidth = textSize(max_len_line, fontName, size)
         textHeight = len(lines) * size
 
         return [textWidth, textHeight]
 
 #Def Draw text:
-def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24, x = 0, y = 0, color = "black", alpha = 255, alignX = "left", alignY = "left", boxWidth = None):
+def drawText(screen, text = "", fontName = pixelFont, size=24, x = 0, y = 0, color = "black", alpha = 255, alignX = "left", alignY = "left", boxWidth = None):
     if not text == "":
         if color == "light":
             color = "black"
@@ -105,7 +109,7 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
             alpha = 255
         #Tạo ra font, chữ:
         font = pygame.font.Font(fontName, size)
-        
+         
         #Tìm ra giá trị x và y của text chuẩn bị vẽ:
         lines = text.splitlines()
         max_length = 0
@@ -115,8 +119,9 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
             line = lines[lineIndex]
             #print(lines)
             if not boxWidth == None:
-                word = font.render(line, 0, color)
-                lineWidth = word.get_width()
+                ##word = font.render(line, 0, color)
+                ##lineWidth = word.get_width()
+                lineWidth = textSize(line, fontName, size)
                 lineChange1 = line
                 lineChange2 = ""
                 k = 0
@@ -135,7 +140,8 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
                             lineChange2 = lastWord
                             lines[lineIndex] = lineChange1
                             lineChange2List.insert(0, lineChange2)
-                            lineWidth = font.render(lineChange1, 0, color).get_width()
+                            ##lineWidth = font.render(lineChange1, 0, color).get_width()
+                            lineWidth = textSize(lineChange1, fontName, size)
                         if lineWidth > boxWidth:
                             lineChange2 = ""
                             k += 1
@@ -149,8 +155,9 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
                         while lineWidth > boxWidth:
                             lineChange2 = lineChange1[-1] + lineChange2
                             lineChange1 = lineChange1[:-1]
-                            word = font.render(lineChange1, 0, color)
-                            lineWidth = word.get_width()
+                            ##word = font.render(lineChange1, 0, color)
+                            ##lineWidth = word.get_width()
+                            lineWidth = textSize(lineChange1, fontName, size)
                         lines[lineIndex] = lineChange1
                         if k == 1:
                             lineChange2 += " " + " ".join(lineChange2List)
@@ -162,7 +169,7 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
                 max_length = len(line)
                 max_len_line = line
         xIndex = lines.index(max_len_line)
-        textPrint = font.render(lines[xIndex], 1, (255,255,255))
+        #textPrint = font.render(lines[xIndex], 1, (255,255,255))
 
         yPrintText = y
         if alignY == "center":
@@ -178,6 +185,14 @@ def drawText(screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size=24
             elif alignX == "center":
                 xPrintText -= (word.get_width() / 2)
             screen.blit(word, (xPrintText, (yPrintText + size*i)))
+
+#Sub-def that returns width of a word:
+def textSize(text = "", fontName = pixelFont, size = 24):
+    font = pygame.font.Font(fontName, size)
+    textSize = font.render(text, 0, "black")
+
+    return textSize.get_width()
+
 
 #Class Button, tạo ra nút có thể nhấn được:
 class button():
@@ -221,7 +236,7 @@ class button():
         self.clickedOutside = False
         self.brightnessTouch = True
 
-    def draw(self, screen, text = "", fontName = "Fonts/MinecraftRegular.otf", size = 24, color = "black", themeType = None, alignText = "center", offsetText = (0, 0)):
+    def draw(self, screen, text = "", fontName = pixelFont, size = 24, color = "black", themeType = None, alignText = "center", offsetText = (0, 0)):
         #Set color (changing image of button) depends on theme right now
         if not self.themeChanging == False:
             if themeType == "light":
@@ -724,6 +739,7 @@ class toDoList():
             cardY += cardHeightList[i] + self.cardPadding
         
         #Draw create new card btn:
+        self.createCardBtn.cardText = self.createCardBtn_text
         self.createCardBtn.draw(screen, events, xPos, cardY, xPos + self.cardPadding, cardY + self.cardTextPadding - 2)
         if self.createCardBtn.action:
             newCardName = "none"
