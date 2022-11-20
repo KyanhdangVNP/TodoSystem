@@ -25,35 +25,27 @@ def getLanuageInfo(lang):
     langInfo = dictionary
     return dictionary
 
-
 #|  PYGAME FUNCTIONS |
 #Def that calculate all text rect width and height:
-def calSizeText(text = "", fontName = pixelFont, size = 24, boxWidth = None):
-    if text == "" or text == None or len(text) == 0:
+def calTextBox(text = "", fontName = pixelFont, size = 24, boxWidth = None, valueReturn = "size"):
+    if text == None or len(text) == 0: #WILL CHECK LATER
         return [0, round(size * 0.6)]
     else:
-        #Tạo ra font, chữ:
-        ##font = pygame.font.Font(fontName, size)
-        
-        #Tìm ra giá trị x và y của text chuẩn bị vẽ:
-        lines = text.splitlines()
-        max_length = 0
+        lines = text.splitlines() #Split all lines into a list of lines
         
         lineIndex = 0
         while lineIndex < len(lines):
             line = lines[lineIndex]
             #print(lines)
             if not boxWidth == None:
-                ##word = font.render(line, 0, "black")
-                ##lineWidth = word.get_width()
-                lineWidth = textSize(line, fontName, size)
+                lineWidth = getTextWidth(line, fontName, size)
                 lineChange1 = line
                 lineChange2 = ""
                 #print(f"""line: {line}
 #lineWidth > boxWidth: {lineWidth > boxWidth}
 #lineWidth: {lineWidth}""")
                 if lineWidth > boxWidth:
-                    wordList = line.split()
+                    wordList = line.strip().split()
                     if not len(wordList) < 2:
                         #print("Moving word")
                         lineChange2List = []
@@ -64,7 +56,7 @@ def calSizeText(text = "", fontName = pixelFont, size = 24, boxWidth = None):
                             lineChange2 = lastWord
                             lines[lineIndex] = lineChange1
                             lineChange2List.insert(0, lineChange2)
-                            lineWidth = textSize(lineChange1, fontName, size)
+                            lineWidth = getTextWidth(lineChange1, fontName, size)
                             ##lineWidth = font.render(lineChange1, 0, "black").get_width()
                         lines.insert(lineIndex + 1, " ".join(lineChange2List))
                         if lineWidth > boxWidth:        #SHOULD CHECKING LATER (NOT IMPORTANT)
@@ -79,21 +71,21 @@ def calSizeText(text = "", fontName = pixelFont, size = 24, boxWidth = None):
                             lineChange1 = lineChange1[:-1]
                             ##word = font.render(lineChange1, 0, "black")
                             ##lineWidth = word.get_width()
-                            lineWidth = textSize(lineChange1, fontName, size)
+                            lineWidth = getTextWidth(lineChange1, fontName, size)
                         lines[lineIndex] = lineChange1
                         lines.insert(lineIndex + 1, lineChange2)
             lineIndex += 1
         
+        max_length = 0
         for line in lines:
             if(len(line) > max_length):
                 max_length = len(line)
                 max_len_line = line
-        ##textPrint = font.render(max_len_line, 1, "black")
         
         #Create loop to calculate height and width all text when rendered:
-        ##textWidth = textPrint.get_width()
-        textWidth = textSize(max_len_line, fontName, size)
-        textHeight = len(lines) * size
+        if valueReturn == "size":
+            textWidth = getTextWidth(max_len_line, fontName, size)
+            textHeight = len(lines) * size
 
         return [textWidth, textHeight]
 
@@ -121,7 +113,7 @@ def drawText(screen, text = "", fontName = pixelFont, size=24, x = 0, y = 0, col
             if not boxWidth == None:
                 ##word = font.render(line, 0, color)
                 ##lineWidth = word.get_width()
-                lineWidth = textSize(line, fontName, size)
+                lineWidth = getTextWidth(line, fontName, size)
                 lineChange1 = line
                 lineChange2 = ""
                 k = 0
@@ -141,7 +133,7 @@ def drawText(screen, text = "", fontName = pixelFont, size=24, x = 0, y = 0, col
                             lines[lineIndex] = lineChange1
                             lineChange2List.insert(0, lineChange2)
                             ##lineWidth = font.render(lineChange1, 0, color).get_width()
-                            lineWidth = textSize(lineChange1, fontName, size)
+                            lineWidth = getTextWidth(lineChange1, fontName, size)
                         if lineWidth > boxWidth:
                             lineChange2 = ""
                             k += 1
@@ -157,7 +149,7 @@ def drawText(screen, text = "", fontName = pixelFont, size=24, x = 0, y = 0, col
                             lineChange1 = lineChange1[:-1]
                             ##word = font.render(lineChange1, 0, color)
                             ##lineWidth = word.get_width()
-                            lineWidth = textSize(lineChange1, fontName, size)
+                            lineWidth = getTextWidth(lineChange1, fontName, size)
                         lines[lineIndex] = lineChange1
                         if k == 1:
                             lineChange2 += " " + " ".join(lineChange2List)
@@ -187,11 +179,11 @@ def drawText(screen, text = "", fontName = pixelFont, size=24, x = 0, y = 0, col
             screen.blit(word, (xPrintText, (yPrintText + size*i)))
 
 #Sub-def that returns width of a word:
-def textSize(text = "", fontName = pixelFont, size = 24):
+def getTextWidth(text = "", fontName = pixelFont, size = 24):
     font = pygame.font.Font(fontName, size)
-    textSize = font.render(text, 0, "black")
+    getTextWidth = font.render(text, 0, "black")
 
-    return textSize.get_width()
+    return getTextWidth.get_width()
 
 
 #Class Button, tạo ra nút có thể nhấn được:
@@ -642,7 +634,7 @@ class toDoList():
         cardHeightList = []
         for i in range(len(self.toDoList)):
             if len(self.toDoList[i]) > 0:
-                cardTextHeight = calSizeText(self.toDoList[i], pixelFont, self.FontSize, self.width - (self.cardTextPadding * 2))[1]
+                cardTextHeight = calTextBox(self.toDoList[i], pixelFont, self.FontSize, self.width - (self.cardTextPadding * 2))[1]
                 cardHeightList.append(cardTextHeight + (self.cardTextPadding * 2))
             else:
                 cardHeightList.append(self.FontSize + 2)
@@ -659,7 +651,7 @@ class toDoList():
         drawRect(screen, xPos, yPos, self.width + (self.padding * 2), self.height, "light gray", self.alpha, "center", 8)
         if self.titleObj == None:
             self.titleObj = toDoListRect(self.title, pixelFont, self.titleFontSize, self.width, self.titleHeight, self.width - self.cardTextPadding, "title")
-        self.titleHeight = calSizeText(self.titleObj.cardText, pixelFont, self.titleFontSize, self.width - 10)[1] + 15
+        self.titleHeight = calTextBox(self.titleObj.cardText, pixelFont, self.titleFontSize, self.width - 10)[1] + 15
         self.titleObj.height = self.titleHeight
         yPrintText = yPos + self.padding + self.cardTextPadding
         # screen, self.title, pixelFont, self.titleFontSize, xPos, yPrintText, "black", 255, "center", "left"

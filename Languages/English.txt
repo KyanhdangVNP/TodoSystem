@@ -6,7 +6,7 @@ startBtn: Start
 settingsBtn: Settings
 exitBtn: Exit
 
-smallCreditText: Made by Staregos Team
+smallCreditText: Made by Kyanh
 
 
 #SETTINGS SCREEN:
